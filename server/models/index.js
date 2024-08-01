@@ -6,7 +6,7 @@ const Sequelize = require('sequelize');
 const process = require('process');
 const basename = path.basename(__filename);
 const env = process.env.NODE_ENV || 'development';
-const config = require(__dirname + '/../config/config.json')[env];
+const config = require(__dirname + '/../config/config.js')[env];
 const db = {};
 
 let sequelize;
@@ -40,27 +40,24 @@ Object.keys(db).forEach(modelName => {
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
-// db.HomeBanner = require('./eaprohomebanner')(sequelize,Sequelize);
-db.Admin= require('./admin')(sequelize,Sequelize);
-db.Testimonials = require('./testimonials')(sequelize,Sequelize);
-db.Offers = require('./offer_and_discount')(sequelize,Sequelize);
-db.HomeOtherSections = require('./home-sections')(sequelize,Sequelize);
-db.OurTeam = require('./our_team')(sequelize,Sequelize);
-db.Countries = require('./countries')(sequelize,Sequelize);
-db.States = require('./states')(sequelize,Sequelize);
-db.Cities = require('./cities')(sequelize,Sequelize);
-db.User = require('./user')(sequelize,Sequelize);
+// Define your models and associations here
+db.Admin = require('./admin')(sequelize, Sequelize);
+db.Testimonials = require('./testimonials')(sequelize, Sequelize);
+db.Offers = require('./offer_and_discount')(sequelize, Sequelize);
+db.HomeOtherSections = require('./home-sections')(sequelize, Sequelize);
+db.OurTeam = require('./our_team')(sequelize, Sequelize);
+db.Countries = require('./countries')(sequelize, Sequelize);
+db.States = require('./states')(sequelize, Sequelize);
+db.Cities = require('./cities')(sequelize, Sequelize);
+db.User = require('./user')(sequelize, Sequelize);
 
+db.Countries.hasMany(db.States, { foreignKey: 'country_id', as: 'states' });
+db.States.belongsTo(db.Countries, { foreignKey: 'country_id', as: 'countries' });
 
+db.States.hasMany(db.Cities, { foreignKey: 'state_id', as: 'cities' });
+db.Cities.belongsTo(db.States, { foreignKey: 'state_id', as: 'states' });
 
-db.Countries.hasMany(db.States,{foreignKey:'country_id',as:'states'});
-db.States.belongsTo(db.Countries,{foreignKey:'country_id',as:'countries'});
-
-db.States.hasMany(db.Cities,{foreignKey:'state_id',as:'cities'});
-db.Cities.belongsTo(db.States,{foreignKey:'state_id',as:'states'});
-
-db.Countries.hasMany(db.Cities,{foreignKey:'country_id',as:'cities'});
-db.Cities.belongsTo(db.Countries,{foreignKey:'country_id',as:'countries' });
-
+db.Countries.hasMany(db.Cities, { foreignKey: 'country_id', as: 'cities' });
+db.Cities.belongsTo(db.Countries, { foreignKey: 'country_id', as: 'countries' });
 
 module.exports = db;
